@@ -12,12 +12,13 @@
 <div id="map"></div>
 
 <script>
-// 지도가 완전히 로드된 후 실행되도록 보장
+// 1. 지도 초기화
 var map = new naver.maps.Map('map', {
     center: new naver.maps.LatLng(36.5, 127.8),
     zoom: 7
 });
 
+// 2. 지점 리스트
 var branches = [
     "부천상동점","시흥목감점","안산고잔점","부천신중동점","일산중산점",
     "분당오리점","논산내동점","시흥은계점","광주풍암점","수원광교점",
@@ -27,36 +28,36 @@ var branches = [
     "대전도안점","다산신도시점"
 ];
 
-var goldMarker = {
-    content: '<div style="background:gold;width:16px;height:16px;border-radius:50%;border:2px solid #333;"></div>',
-    anchor: new naver.maps.Point(8, 8)
-};
+// 3. 금색 마커 디자인
+var goldMarkerHtml = '<div style="background:gold;width:16px;height:16px;border-radius:50%;border:2px solid #333;box-shadow:2px 2px 5px rgba(0,0,0,0.3);"></div>';
 
-branches.forEach(function(name){
+// 4. 주소 검색 및 마커 표시 함수
+function addBranchMarker(name) {
     var query = "솔레아스풋볼 " + name;
 
-    // 네이버 서비스 라이브러리를 직접 사용하여 CORS 에러 회피
     naver.maps.Service.geocode({
         query: query
     }, function(status, response) {
-        if (status !== naver.maps.Service.Status.OK || !response.v2.addresses[0]) {
-            console.log(name + " 주소 검색 실패");
+        // 인증 실패나 CORS 문제가 여기서 발생하면 에러 로그 출력
+        if (status !== naver.maps.Service.Status.OK) {
+            console.error(name + " 검색 실패. 상태 코드: " + status);
             return;
         }
 
         var result = response.v2.addresses[0];
-        var latlng = new naver.maps.LatLng(result.y, result.x);
+        if (!result) return;
 
         var marker = new naver.maps.Marker({
-            position: latlng,
+            position: new naver.maps.LatLng(result.y, result.x),
             map: map,
-            icon: goldMarker
+            icon: {
+                content: goldMarkerHtml,
+                anchor: new naver.maps.Point(8, 8)
+            }
         });
 
         var infoWindow = new naver.maps.InfoWindow({
-            content: '<div style="padding:10px;font-size:12px;font-weight:bold;">솔레아스풋볼 ' + name + '</div>',
-            borderWidth: 1,
-            disableAnchor: true
+            content: '<div style="padding:10px;font-size:12px;font-weight:bold;">' + name + '</div>'
         });
 
         naver.maps.Event.addListener(marker, "click", function() {
@@ -67,7 +68,10 @@ branches.forEach(function(name){
             }
         });
     });
-});
+}
+
+// 리스트 순회하며 실행
+branches.forEach(addBranchMarker);
 </script>
 </body>
 </html>
