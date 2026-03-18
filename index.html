@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>솔레아스풋볼 지점 안내</title>
-<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=xw0tk9m5e9&ncpKeyId=xw0tk9m5e9"></script>
+    <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=xw0tk9m5e9&ncpKeyId=xw0tk9m5e9"></script>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
         #map { width: 100%; height: 100vh; }
@@ -18,7 +18,7 @@ var map = new naver.maps.Map('map', {
     zoom: 7
 });
 
-// ✅ 검수한 전 지점 정밀 좌표 데이터
+// ✅ 정밀 보정된 지점 데이터
 var branches = [
     { name:"솔레아스풋볼 부천상동점", lat:37.5034821, lng:126.7511652, addr:"경기도 부천시 원미구 부흥로 14, 3층", tel:"032-323-9195" },
     { name:"솔레아스풋볼 시흥목감점", lat:37.3820456, lng:126.8794821, addr:"경기도 시흥시 수인로 2323, 뉴홍익빌딩 4층", tel:"031-504-6172" },
@@ -49,13 +49,13 @@ var branches = [
 ];
 
 branches.forEach(function(branch){
-    // 1. ✅ 물방울 모양 골드 마커 생성
+    // 1. 물방울 모양 골드 마커 생성 (#cbb85f)
     var marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(branch.lat, branch.lng),
         map: map,
         icon: {
             content: `
-            <div style="cursor:pointer; position:relative; width:22px; height:30px;">
+            <div style="cursor:pointer; width:22px; height:30px;">
                 <svg width="22" height="30" viewBox="0 0 100 136" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M50 0C22.3858 0 0 22.3858 0 50C0 67.4568 9.07466 82.7845 22.8462 91.6854L50 136L77.1538 91.6854C90.9253 82.7845 100 67.4568 100 50C100 22.3858 77.6142 0 50 0Z" fill="#333"/>
                     <path d="M50 8C26.804 8 8 26.804 8 50C8 64.6067 15.6027 77.4243 27.1246 84.8872L50 122.2L72.8754 84.8872C84.3973 77.4243 92 64.6067 92 50C92 26.804 73.196 8 50 8Z" fill="#cbb85f"/>
@@ -63,11 +63,11 @@ branches.forEach(function(branch){
                 </svg>
             </div>
             `,
-            anchor: new naver.maps.Point(11, 30) // 마커의 뾰족한 끝이 정확한 좌표에 오도록 설정
+            anchor: new naver.maps.Point(11, 30)
         }
     });
 
-    // 2. 텍스트 라벨 생성
+    // 2. 텍스트 라벨 (지점명)
     var label = new naver.maps.Marker({
         position: new naver.maps.LatLng(branch.lat, branch.lng),
         map: map,
@@ -77,7 +77,7 @@ branches.forEach(function(branch){
         }
     });
 
-    // 3. 클릭 시 정보창 (디자인 개선)
+    // 3. 클릭 시 정보창
     var infoWindow = new naver.maps.InfoWindow({
         content: `
         <div style="padding:15px;min-width:200px;line-height:1.6;font-family:'Malgun Gothic', sans-serif;">
