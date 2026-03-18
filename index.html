@@ -1,62 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=xw0tk9m5e9&submodules=geocoder"></script>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=xw0tk9m5e9&submodules=geocoder"></script>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        #map { width: 100%; height: 100vh; }
+    </style>
 </head>
-
 <body>
-<div id="map" style="width:100%;height:100vh;"></div>
+<div id="map"></div>
 
 <script>
+// 지도가 완전히 로드된 후 실행되도록 보장
 var map = new naver.maps.Map('map', {
     center: new naver.maps.LatLng(36.5, 127.8),
     zoom: 7
 });
 
-// 지점 리스트
 var branches = [
-"부천상동점","시흥목감점","안산고잔점","부천신중동점","일산중산점",
-"분당오리점","논산내동점","시흥은계점","광주풍암점","수원광교점",
-"부평삼산점","수원영통점","안성시청점","광주수완점","광주봉선점",
-"분당판교점","송파잠실점","대구달서점","천안불당점","김포시청점",
-"동탄역점","광명철산점","포항장성점","노원중계점","송파문정점",
-"대전도안점","다산신도시점"
+    "부천상동점","시흥목감점","안산고잔점","부천신중동점","일산중산점",
+    "분당오리점","논산내동점","시흥은계점","광주풍암점","수원광교점",
+    "부평삼산점","수원영통점","안성시청점","광주수완점","광주봉선점",
+    "분당판교점","송파잠실점","대구달서점","천안불당점","김포시청점",
+    "동탄역점","광명철산점","포항장성점","노원중계점","송파문정점",
+    "대전도안점","다산신도시점"
 ];
 
-// 금색 마커
 var goldMarker = {
-    content: '<div style="background:gold;width:16px;height:16px;border-radius:50%;border:2px solid #333;"></div>'
+    content: '<div style="background:gold;width:16px;height:16px;border-radius:50%;border:2px solid #333;"></div>',
+    anchor: new naver.maps.Point(8, 8)
 };
 
-// 주소 변환 + 마커 생성
 branches.forEach(function(name){
     var query = "솔레아스풋볼 " + name;
 
+    // 네이버 서비스 라이브러리를 직접 사용하여 CORS 에러 회피
     naver.maps.Service.geocode({
         query: query
     }, function(status, response) {
-
-        if (status !== naver.maps.Service.Status.OK) {
+        if (status !== naver.maps.Service.Status.OK || !response.v2.addresses[0]) {
+            console.log(name + " 주소 검색 실패");
             return;
         }
 
         var result = response.v2.addresses[0];
-        var lat = result.y;
-        var lng = result.x;
+        var latlng = new naver.maps.LatLng(result.y, result.x);
 
         var marker = new naver.maps.Marker({
-            position: new naver.maps.LatLng(lat, lng),
+            position: latlng,
             map: map,
             icon: goldMarker
         });
 
         var infoWindow = new naver.maps.InfoWindow({
-            content: '<div style="padding:5px;font-size:12px;">' + name + '</div>'
+            content: '<div style="padding:10px;font-size:12px;font-weight:bold;">솔레아스풋볼 ' + name + '</div>',
+            borderWidth: 1,
+            disableAnchor: true
         });
 
         naver.maps.Event.addListener(marker, "click", function() {
-            infoWindow.open(map, marker);
+            if (infoWindow.getMap()) {
+                infoWindow.close();
+            } else {
+                infoWindow.open(map, marker);
+            }
         });
     });
 });
