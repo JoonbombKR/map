@@ -1,66 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=xw0tk9m5e9"></script>
-    <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
-        #map { width: 100%; height: 100vh; }
-    </style>
+<meta charset="utf-8">
+<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=xw0tk9m5e9"></script>
 </head>
+
 <body>
-<div id="map"></div>
+<div id="map" style="width:100%;height:100vh;"></div>
+
 <script>
-    var map = new naver.maps.Map('map', {
-        center: new naver.maps.LatLng(36.5, 127.8),
-        zoom: 7
+// 지도 생성
+var map = new naver.maps.Map('map', {
+    center: new naver.maps.LatLng(36.5, 127.8),
+    zoom: 7
+});
+
+// 지점 + 좌표 (27개)
+var locations = [
+{ name:"부천상동점", lat:37.5046, lng:126.7530 },
+{ name:"시흥목감점", lat:37.3815, lng:126.8650 },
+{ name:"안산고잔점", lat:37.3203, lng:126.8301 },
+{ name:"부천신중동점", lat:37.5030, lng:126.7660 },
+{ name:"일산중산점", lat:37.6845, lng:126.7790 },
+
+{ name:"분당오리점", lat:37.3398, lng:127.1089 },
+{ name:"논산내동점", lat:36.1872, lng:127.0985 },
+{ name:"시흥은계점", lat:37.3891, lng:126.8075 },
+{ name:"광주풍암점", lat:35.1265, lng:126.8780 },
+{ name:"수원광교점", lat:37.2860, lng:127.0510 },
+
+{ name:"부평삼산점", lat:37.5070, lng:126.7370 },
+{ name:"수원영통점", lat:37.2510, lng:127.0710 },
+{ name:"안성시청점", lat:37.0085, lng:127.2790 },
+{ name:"광주수완점", lat:35.1910, lng:126.8150 },
+{ name:"광주봉선점", lat:35.1290, lng:126.9070 },
+
+{ name:"분당판교점", lat:37.3945, lng:127.1110 },
+{ name:"송파잠실점", lat:37.5133, lng:127.1000 },
+{ name:"대구달서점", lat:35.8290, lng:128.5320 },
+{ name:"천안불당점", lat:36.8151, lng:127.1139 },
+{ name:"김포시청점", lat:37.6150, lng:126.7150 },
+
+{ name:"동탄역점", lat:37.2008, lng:127.0969 },
+{ name:"광명철산점", lat:37.4760, lng:126.8680 },
+{ name:"포항장성점", lat:36.0480, lng:129.3650 },
+{ name:"노원중계점", lat:37.6510, lng:127.0760 },
+{ name:"송파문정점", lat:37.4845, lng:127.1220 },
+
+{ name:"대전도안점", lat:36.3100, lng:127.3350 },
+{ name:"다산신도시점", lat:37.6520, lng:127.1200 }
+];
+
+// 금색 마커
+var goldMarker = {
+    content: '<div style="background:gold;width:16px;height:16px;border-radius:50%;border:2px solid #333;"></div>'
+};
+
+// 마커 생성
+locations.forEach(function(loc) {
+
+    var marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(loc.lat, loc.lng),
+        map: map,
+        icon: goldMarker
     });
 
-    // 솔레아스풋볼 전 지점 실제 좌표 데이터 (직접 입력으로 에러 원천 차단)
-    var locations = [
-        { name: "부천상동점", lat: 37.5034, lng: 126.7512 },
-        { name: "시흥목감점", lat: 37.3821, lng: 126.8795 },
-        { name: "안산고잔점", lat: 37.3015, lng: 126.8234 },
-        { name: "부천신중동점", lat: 37.5031, lng: 126.7758 },
-        { name: "일산중산점", lat: 37.6908, lng: 126.7865 },
-        { name: "분당오리점", lat: 37.3392, lng: 127.1096 },
-        { name: "시흥은계점", lat: 37.4475, lng: 126.8043 },
-        { name: "수원광교점", lat: 37.2982, lng: 127.0481 },
-        { name: "부평삼산점", lat: 37.5072, lng: 126.7369 },
-        { name: "분당판교점", lat: 37.4011, lng: 127.1086 },
-        { name: "송파잠실점", lat: 37.5061, lng: 127.0842 },
-        { name: "송파문정점", lat: 37.4815, lng: 127.1234 },
-        { name: "대전도안점", lat: 36.3458, lng: 127.3402 },
-        { name: "광주봉선점", lat: 35.1264, lng: 126.9084 },
-        { name: "광주수완점", lat: 35.1915, lng: 126.8234 },
-        { name: "다산신도시점", lat: 37.6112, lng: 127.1645 }
-        // 나머지 지점들도 동일한 방식으로 추가 가능합니다.
-    ];
-
-    var goldMarkerHtml = '<div style="background:gold;width:16px;height:16px;border-radius:50%;border:2px solid #333;box-shadow:2px 2px 5px rgba(0,0,0,0.3);"></div>';
-
-    locations.forEach(function(loc) {
-        var marker = new naver.maps.Marker({
-            position: new naver.maps.LatLng(loc.lat, loc.lng),
-            map: map,
-            icon: {
-                content: goldMarkerHtml,
-                anchor: new naver.maps.Point(8, 8)
-            }
-        });
-
-        var infoWindow = new naver.maps.InfoWindow({
-            content: '<div style="padding:10px;font-size:12px;font-weight:bold;">솔레아스 ' + loc.name + '</div>'
-        });
-
-        naver.maps.Event.addListener(marker, "click", function() {
-            if (infoWindow.getMap()) {
-                infoWindow.close();
-            } else {
-                infoWindow.open(map, marker);
-            }
-        });
+    var infoWindow = new naver.maps.InfoWindow({
+        content: '<div style="padding:5px;font-size:12px;">' + loc.name + '</div>'
     });
+
+    naver.maps.Event.addListener(marker, "click", function() {
+        infoWindow.open(map, marker);
+    });
+
+});
 </script>
 </body>
 </html>
