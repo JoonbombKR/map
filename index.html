@@ -11,25 +11,24 @@
 <body>
 <div id="map"></div>
 <script>
-    // 1. 지도 초기화 (전국이 보이도록 설정)
     var map = new naver.maps.Map('map', {
         center: new naver.maps.LatLng(36.5, 127.8),
         zoom: 7
     });
 
-    // 2. 주요 지점 좌표 데이터 (CORS 에러를 피하기 위해 직접 입력)
-    // 우선 대표적인 지점 5개만 먼저 넣었습니다. 잘 뜨는지 확인 후 제가 나머지도 다 채워드릴게요.
+    // 1. 네이버에 물어보지 않고 직접 좌표를 입력 (에러 발생 소지 차단)
     var locations = [
         { name: "부천상동점", lat: 37.5034, lng: 126.7512 },
         { name: "시흥목감점", lat: 37.3821, lng: 126.8795 },
         { name: "안산고잔점", lat: 37.3015, lng: 126.8234 },
         { name: "분당판교점", lat: 37.4011, lng: 127.1086 },
-        { name: "광주봉선점", lat: 35.1264, lng: 126.9084 }
+        { name: "광주봉선점", lat: 35.1264, lng: 126.9084 },
+        { name: "시흥은계점", lat: 37.4475, lng: 126.8043 },
+        { name: "대전도안점", lat: 36.3458, lng: 127.3402 }
     ];
 
     var goldMarkerHtml = '<div style="background:gold;width:16px;height:16px;border-radius:50%;border:2px solid #333;box-shadow:2px 2px 5px rgba(0,0,0,0.3);"></div>';
 
-    // 3. 마커 찍기
     locations.forEach(function(loc) {
         var marker = new naver.maps.Marker({
             position: new naver.maps.LatLng(loc.lat, loc.lng),
