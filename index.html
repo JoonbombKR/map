@@ -21,7 +21,9 @@ var map = new naver.maps.Map('map', {
     zoom: 7
 });
 
-// ✅ 좌표 기반 (정확 위치)
+var infoWindows = [];
+
+// 지점 데이터
 var branches = [
 { name:"솔레아스풋볼 송파잠실점", lat:37.5073, lng:127.1028, addr:"서울 송파구 석촌호수로 262", tel:"02-2038-2581" },
 { name:"솔레아스풋볼 부천상동점", lat:37.5055, lng:126.7520, addr:"경기 부천시 부흥로 14", tel:"032-323-9195" },
@@ -33,13 +35,13 @@ var branches = [
 { name:"솔레아스풋볼 논산내동점", lat:36.1871, lng:127.0845, addr:"충남 논산시 시민로 235", tel:"041-734-0308" },
 { name:"솔레아스풋볼 시흥은계점", lat:37.4346, lng:126.8082, addr:"경기 시흥시 은계중앙로306번길 36", tel:"031-362-5551" },
 { name:"솔레아스풋볼 광주풍암점", lat:35.1346, lng:126.8802, addr:"광주 서구 회재로 1054", tel:"062-671-0055" },
-{ name:"솔레아스풋볼 수원광교점", lat:37.2880, lng:127.0445, addr:"경기 수원시 광교중앙로", tel:"031-895-4195" },
+{ name:"솔레아스풋볼 수원광교점", lat:37.2880, lng:127.0445, addr:"경기 수원시", tel:"031-895-4195" },
 { name:"솔레아스풋볼 부평삼산점", lat:37.5070, lng:126.7332, addr:"인천 부평구 장제로 336", tel:"032-522-5223" },
 { name:"솔레아스풋볼 수원영통점", lat:37.2525, lng:127.0715, addr:"경기 수원시 반달로 21", tel:"031-8002-5411" },
 { name:"솔레아스풋볼 안성시청점", lat:37.0077, lng:127.2796, addr:"경기 안성시", tel:"031-677-6954" },
 { name:"솔레아스풋볼 광주수완점", lat:35.1902, lng:126.8203, addr:"광주 광산구", tel:"062-954-9990" },
 { name:"솔레아스풋볼 광주봉선점", lat:35.1212, lng:126.9064, addr:"광주 남구", tel:"062-675-1004" },
-{ name:"솔레아스풋볼 분당판교점", lat:37.3943, lng:127.1103, addr:"경기 성남시 판교로", tel:"031-701-1018" },
+{ name:"솔레아스풋볼 분당판교점", lat:37.3943, lng:127.1103, addr:"경기 성남시", tel:"031-701-1018" },
 { name:"솔레아스풋볼 송파문정점", lat:37.4847, lng:127.1227, addr:"서울 송파구", tel:"02-3012-9298" },
 { name:"솔레아스풋볼 대구달서점", lat:35.8290, lng:128.5325, addr:"대구 달서구", tel:"053-633-1888" },
 { name:"솔레아스풋볼 천안불당점", lat:36.8190, lng:127.1135, addr:"충남 천안시", tel:"041-522-8029" },
@@ -52,40 +54,78 @@ var branches = [
 { name:"솔레아스풋볼 다산신도시점", lat:37.6525, lng:127.1300, addr:"경기 남양주", tel:"031-557-7707" }
 ];
 
-// 마커 생성
 branches.forEach(function(branch) {
 
     var position = new naver.maps.LatLng(branch.lat, branch.lng);
 
+    // 🔥 금색 물방울 마커
     var marker = new naver.maps.Marker({
         position: position,
-        map: map
+        map: map,
+        icon: {
+            content: `
+            <div style="width:26px;height:36px;cursor:pointer;">
+                <svg width="26" height="36" viewBox="0 0 100 136">
+                    <path d="M50 0C22 0 0 22 0 50C0 70 12 85 25 95L50 136L75 95C88 85 100 70 100 50C100 22 78 0 50 0Z" fill="#cbb85f"/>
+                    <circle cx="50" cy="50" r="12" fill="white"/>
+                </svg>
+            </div>`,
+            anchor: new naver.maps.Point(13, 36)
+        }
     });
 
-    // 라벨
+    // 🔥 지점명 라벨 (팝업 느낌)
     var label = new naver.maps.Marker({
         position: position,
         map: map,
         icon: {
-            content: '<div style="font-size:11px;font-weight:bold;background:#fff;padding:2px 6px;border-radius:4px;border:1px solid #333;">'+branch.name+'</div>'
+            content: `
+            <div style="
+                background:#fff;
+                padding:4px 8px;
+                border-radius:6px;
+                border:1px solid #cbb85f;
+                font-size:11px;
+                font-weight:bold;
+                white-space:nowrap;
+                box-shadow:0 2px 6px rgba(0,0,0,0.15);
+                transform:translateY(-45px);
+            ">
+                ${branch.name}
+            </div>`
         }
     });
 
-    // 팝업
+    // 🔥 클릭 팝업
     var infoWindow = new naver.maps.InfoWindow({
         content: `
-        <div style="padding:10px;font-size:13px;">
-            <strong>${branch.name}</strong><br>
-            📍 ${branch.addr}<br>
-            📞 ${branch.tel}
+        <div style="padding:12px;min-width:200px;font-family:sans-serif;">
+            <div style="font-weight:bold;color:#cbb85f;font-size:14px;">
+                ${branch.name}
+            </div>
+            <div style="margin-top:6px;font-size:12px;color:#555;">
+                📍 ${branch.addr}
+            </div>
+            <div style="font-size:12px;font-weight:bold;">
+                📞 ${branch.tel}
+            </div>
         </div>`
     });
 
+    infoWindows.push(infoWindow);
+
+    // 클릭 시 하나만 열리게
     naver.maps.Event.addListener(marker, "click", function() {
+
+        infoWindows.forEach(function(iw) {
+            iw.close();
+        });
+
         infoWindow.open(map, marker);
     });
 
 });
+
 </script>
 </body>
 </html>
