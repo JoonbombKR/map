@@ -18,7 +18,7 @@ var map = new naver.maps.Map('map', {
     zoom: 7
 });
 
-// ✅ 정밀 보정된 지점 데이터
+// ✅ 검수한 전 지점 정밀 좌표 데이터
 var branches = [
     { name:"솔레아스풋볼 부천상동점", lat:37.5034821, lng:126.7511652, addr:"경기도 부천시 원미구 부흥로 14, 3층", tel:"032-323-9195" },
     { name:"솔레아스풋볼 시흥목감점", lat:37.3820456, lng:126.8794821, addr:"경기도 시흥시 수인로 2323, 뉴홍익빌딩 4층", tel:"031-504-6172" },
@@ -67,17 +67,18 @@ branches.forEach(function(branch){
         }
     });
 
-    // 2. 텍스트 라벨 (지점명)
+    // 2. ✅ 텍스트 라벨 (지점명 - 검은색 글씨로 변경)
     var label = new naver.maps.Marker({
         position: new naver.maps.LatLng(branch.lat, branch.lng),
         map: map,
         icon: {
-            content: '<div style="font-size:11px;font-weight:bold;color:#cbb85f;background:rgba(255,255,255,0.9);padding:2px 5px;border-radius:4px;border:1px solid #cbb85f;white-space:nowrap;margin-top:-60px;">'+branch.name.replace("솔레아스풋볼 ", "")+'</div>',
+            // 글씨 색상을 #000 (검은색)으로 변경하고 테두리도 검은색 계열로 맞춰 깔끔하게 보이도록 조치했습니다.
+            content: '<div style="font-size:11px;font-weight:bold;color:#000;background:rgba(255,255,255,0.9);padding:2px 5px;border-radius:4px;border:1px solid #999;white-space:nowrap;margin-top:-60px;">'+branch.name.replace("솔레아스풋볼 ", "")+'</div>',
             anchor: new naver.maps.Point(20, 0)
         }
     });
 
-    // 3. 클릭 시 정보창
+    // 3. 클릭 시 정보창 (디자인은 골드 포인트 유지)
     var infoWindow = new naver.maps.InfoWindow({
         content: `
         <div style="padding:15px;min-width:200px;line-height:1.6;font-family:'Malgun Gothic', sans-serif;">
